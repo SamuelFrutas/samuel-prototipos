@@ -110,6 +110,7 @@ function openModal(){editing=null;$("taskform").reset();$("taskdate").value="202
 $("cancelmodal").onclick=()=>$("modalback").classList.remove("show");
 $("taskform").onsubmit=e=>{e.preventDefault();const session=sessions.find(x=>x.id===$("tasksession").value),routine=session?.routines.find(x=>x.id===$("taskroutine").value);if(!session||!routine){alert("Selecione uma sessão e uma rotina.");return}tasks.push({id:Date.now(),name:$("tasktitle").value,sessionId:session.id,routineId:routine.id,routine:routine.name,date:$("taskdate").value||"2026-11-22",time:$("tasktime").value,priority:$("taskpriority").value,done:false,repeat:$("taskrepeat").value});$("modalback").classList.remove("show");setView(current)};
 document.querySelectorAll("[data-view]").forEach(b=>b.addEventListener("click",()=>setView(b.dataset.view)));
-render();
+window.addEventListener("error",event=>{const target=$("view");if(target)target.innerHTML='<div class="card"><h3>Falha ao carregar esta tela</h3><p style="white-space:pre-wrap;overflow-wrap:anywhere;color:#b42318;font-size:12px">'+esc(event.message||"Erro JavaScript")+'</p><p class="muted" style="font-size:11px">Linha: '+(event.lineno||"?")+'</p></div>'});
+try{render()}catch(error){console.error(error);$("view").innerHTML='<div class="card"><h3>Falha ao carregar esta tela</h3><p style="white-space:pre-wrap;overflow-wrap:anywhere;color:#b42318;font-size:12px">'+esc(error?.stack||error?.message||String(error))+'</p></div>'}
 </script>
 </body></html>
