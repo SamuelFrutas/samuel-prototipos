@@ -39,6 +39,10 @@
  <form id="taskform">
   <div class="field"><label for="tasktitle">Nome da tarefa</label><input id="tasktitle" required placeholder="Ex.: Preparar mensagem"></div>
   <div class="fields2">
+   <div class="field"><label for="tasksession">Sessão</label><select id="tasksession" required></select></div>
+   <div class="field"><label for="taskroutine">Rotina</label><select id="taskroutine" required></select></div>
+  </div>
+  <div class="fields2">
    <div class="field"><label for="taskdate">Data</label><input id="taskdate" type="date" value="2026-11-22"></div>
    <div class="field"><label for="tasktime">Horário</label><input id="tasktime" type="time" value="08:00"></div>
   </div>
@@ -56,27 +60,31 @@
  </form>
 </div></div>
 <script>
-const tasks=[
-{id:1,name:"Preparar mensagem",routine:"Pregações",date:"2026-11-22",time:"08:00",priority:"Alta",done:false,repeat:"Não repetir"},
-{id:2,name:"Estudar passagem bíblica",routine:"Pregações",date:"2026-11-22",time:"10:30",priority:"Normal",done:false,repeat:"Todos os dias"},
-{id:3,name:"Organizar material",routine:"Pregações",date:"2026-11-22",time:"14:00",priority:"Normal",done:true,repeat:"Não repetir"},
-{id:4,name:"Revisar pregação",routine:"Pregações",date:"2026-11-23",time:"09:00",priority:"Normal",done:false,repeat:"Não repetir"},
-{id:5,name:"Leitura e anotações",routine:"Estudo pessoal",date:"2026-11-22",time:"19:00",priority:"Baixa",done:false,repeat:"Todos os dias"}
+const sessions=[
+{id:"es",name:"Espírito Santo",vacation:false,routines:[{id:"pregacoes",name:"Pregações",description:"Preparar mensagens, estudar passagens e organizar materiais"},{id:"estudo",name:"Estudo pessoal",description:"Leitura e anotações"}]},
+{id:"rj",name:"Rio de Janeiro",vacation:false,routines:[{id:"trabalho",name:"Trabalho",description:"Rotina de trabalho"},{id:"pedidos",name:"Pedidos",description:"Organização de pedidos"}]}
 ];
-let current="today",vacation=false,selectedDate="2026-11-22",month=new Date(2026,10,1),editing=null;
+const tasks=[
+{id:1,name:"Preparar mensagem",sessionId:"es",routineId:"pregacoes",routine:"Pregações",date:"2026-11-22",time:"08:00",priority:"Alta",done:false,repeat:"Não repetir"},
+{id:2,name:"Estudar passagem bíblica",sessionId:"es",routineId:"pregacoes",routine:"Pregações",date:"2026-11-22",time:"10:30",priority:"Normal",done:false,repeat:"Todos os dias"},
+{id:3,name:"Organizar material",sessionId:"es",routineId:"pregacoes",routine:"Pregações",date:"2026-11-22",time:"14:00",priority:"Normal",done:true,repeat:"Não repetir"},
+{id:4,name:"Revisar pregação",sessionId:"es",routineId:"pregacoes",routine:"Pregações",date:"2026-11-23",time:"09:00",priority:"Normal",done:false,repeat:"Não repetir"},
+{id:5,name:"Leitura e anotações",sessionId:"es",routineId:"estudo",routine:"Estudo pessoal",date:"2026-11-22",time:"19:00",priority:"Baixa",done:false,repeat:"Todos os dias"}
+];
+let current="today",selectedDate="2026-11-22",month=new Date(2026,10,1),editing=null;
 const $=id=>document.getElementById(id);
 const fmt=d=>new Date(d+"T12:00:00").toLocaleDateString("pt-BR",{day:"2-digit",month:"long",weekday:"long"});
 function setView(v){current=v;document.querySelectorAll("[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===v));render()}
-function taskRow(t){return '<div class="task '+(t.done?'completed':'')+'"><button class="check '+(t.done?'done':'')+'" data-check="'+t.id+'" aria-label="Concluir tarefa">'+(t.done?'✓':'')+'</button><div class="taskname"><b>'+esc(t.name)+'</b><small>'+t.time+' · '+esc(t.routine)+(t.repeat!=="Não repetir"?' · '+esc(t.repeat):'')+'</small></div><span class="priority '+(t.priority==="Alta"?'high':'')+'">'+t.priority+'</span></div>'}
+function taskRow(t){const session=sessions.find(x=>x.id===t.sessionId);return '<div class="task '+(t.done?'completed':'')+'"><button class="check '+(t.done?'done':'')+'" data-check="'+t.id+'" aria-label="Concluir tarefa">'+(t.done?'✓':'')+'</button><div class="taskname"><b>'+esc(t.name)+'</b><small>'+esc(session?.name||"Sem sessão")+' › '+esc(t.routine)+' · '+t.time+(t.repeat!=="Não repetir"?' · '+esc(t.repeat):'')+'</small></div><span class="priority '+(t.priority==="Alta"?'high':'')+'">'+t.priority+'</span></div>'}
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function bindChecks(){document.querySelectorAll("[data-check]").forEach(b=>b.onclick=()=>{let t=tasks.find(x=>x.id==b.dataset.check);t.done=!t.done;render()})}
 function render(){
 const v=$("view");$("title").textContent={today:"Hoje",sessions:"Sessões",calendar:"Calendário",completed:"Concluídas"}[current];$("crumb").textContent=$("title").textContent.toUpperCase();
 if(current==="today"){
 const today=tasks.filter(t=>t.date==="2026-11-22"&&!t.done&&!vacation),done=tasks.filter(t=>t.done);
-v.innerHTML='<div class="welcome"><div><h2>Bom dia! 👋</h2><p>Domingo, 22 de novembro · Seu dia em ordem.</p></div><button class="btn" id="addtask">＋ Nova tarefa</button></div><div class="stats"><div class="stat"><b>'+today.length+'</b><span>Pendentes hoje</span></div><div class="stat"><b>'+done.length+'</b><span>Concluídas</span></div><div class="stat"><b>'+Math.round(done.length/tasks.length*100)+'%</b><span>Progresso geral</span><div class="progress"><i style="width:'+Math.round(done.length/tasks.length*100)+'%"></i></div></div></div><div class="grid"><div class="card"><div class="sectionhead"><h3>Suas tarefas de hoje</h3><span class="muted" style="font-size:11px">22 NOV</span></div><div class="task-list">'+(vacation?'<div class="empty">Sessão em modo férias. As tarefas estão suspensas.</div>':today.map(taskRow).join("")||'<div class="empty">Tudo em dia!</div>')+'</div></div><div class="card"><div class="sectionhead"><h3>Suas sessões</h3><button class="link" data-goto="sessions">Ver todas</button></div><div class="routine"><div class="routine-top"><b>Espírito Santo</b><span class="pill '+(vacation?'paused':'')+'">'+(vacation?'Em férias':'Ativa')+'</span></div><p>2 rotinas · '+tasks.length+' tarefas</p></div><div class="routine"><div class="routine-top"><b>Pregações</b><span class="muted">3 tarefas</span></div><p>Preparação e organização de mensagens</p></div><div class="routine"><div class="routine-top"><b>Estudo pessoal</b><span class="muted">2 tarefas</span></div><p>Leitura e anotações</p></div></div></div>';
+v.innerHTML='<div class="welcome"><div><h2>Bom dia! 👋</h2><p>Domingo, 22 de novembro · Seu dia em ordem.</p></div><button class="btn" id="addtask">＋ Nova tarefa</button></div><div class="stats"><div class="stat"><b>'+today.length+'</b><span>Pendentes hoje</span></div><div class="stat"><b>'+done.length+'</b><span>Concluídas</span></div><div class="stat"><b>'+Math.round(done.length/tasks.length*100)+'%</b><span>Progresso geral</span><div class="progress"><i style="width:'+Math.round(done.length/tasks.length*100)+'%"></i></div></div></div><div class="grid"><div class="card"><div class="sectionhead"><h3>Suas tarefas de hoje</h3><span class="muted" style="font-size:11px">22 NOV</span></div><div class="task-list">'+(vacation?'<div class="empty">Sessão em modo férias. As tarefas estão suspensas.</div>':today.map(taskRow).join("")||'<div class="empty">Tudo em dia!</div>')+'</div></div><div class="card"><div class="sectionhead"><h3>Suas sessões</h3><button class="link" data-goto="sessions">Ver todas</button></div>'+sessions.map(session=>'<div class="routine"><div class="routine-top"><b>'+esc(session.name)+'</b><span class="pill '+(session.vacation?'paused':'')+'">'+(session.vacation?'Em férias':'Ativa')+'</span></div><p>'+session.routines.length+' rotinas · '+tasks.filter(t=>t.sessionId===session.id).length+' tarefas</p><div style="margin-top:9px;padding-left:12px;border-left:2px solid var(--line)">'+session.routines.map(r=>'<div style="font-size:12px;padding:4px 0"><b>'+esc(r.name)+'</b></div>').join("")+'</div></div>').join("")+'</div></div>';
 }else if(current==="sessions"){
-v.innerHTML='<div class="welcome"><div><h2>Organize por sessões</h2><p>Cada sessão reúne suas rotinas e tarefas.</p></div><button class="btn secondary" id="addsession">＋ Nova sessão</button></div><div class="card"><div class="sessionbox"><div><h3>Espírito Santo</h3><p>2 rotinas · Pregações e Estudo pessoal</p><span class="pill '+(vacation?'paused':'')+'">'+(vacation?'Modo férias ativado':'Sessão ativa')+'</span></div><button class="switch '+(vacation?'on':'')+'" id="vacation" aria-label="Ativar modo férias"><i></i></button></div><div class="note">Modo férias: ao ativar, as tarefas desta sessão deixam o cronograma e os lembretes/alarmes ficam suspensos. Os dados e o histórico são preservados.</div><h3 style="margin:22px 0 8px">Rotinas da sessão</h3><div class="routine"><div class="routine-top"><b>Pregações</b><button class="link" data-routine="Pregações">Abrir rotina →</button></div><p>Preparar mensagens, estudar passagens e organizar materiais</p></div><div class="routine"><div class="routine-top"><b>Estudo pessoal</b><button class="link" data-routine="Estudo pessoal">Abrir rotina →</button></div><p>Leitura e anotações</p></div><button class="btn ghost" style="margin-top:14px" id="addroutine">＋ Adicionar rotina</button></div>';
+v.innerHTML='<div class="welcome"><div><h2>Organize por sessões</h2><p>As rotinas ficam dentro de cada sessão.</p></div><button class="btn secondary" id="addsession">＋ Nova sessão</button></div>'+sessions.map(session=>'<div class="card" style="margin-bottom:14px"><div class="sessionbox" style="margin-top:0"><div><h3>'+esc(session.name)+'</h3><p>'+session.routines.length+' rotinas · '+session.routines.map(r=>esc(r.name)).join(" e ")+'</p><span class="pill '+(session.vacation?'paused':'')+'">'+(session.vacation?'Modo férias ativado':'Sessão ativa')+'</span></div><button class="switch '+(session.vacation?'on':'')+'" data-vacation="'+session.id+'" aria-label="Ativar modo férias"><i></i></button></div><h3 style="margin:18px 0 8px">Rotinas desta sessão</h3>'+session.routines.map(r=>'<div class="routine"><div class="routine-top"><b>'+esc(r.name)+'</b><button class="link" data-routine="'+r.id+'">Abrir rotina →</button></div><p>'+esc(r.description)+'</p></div>').join("")+'<button class="btn ghost" style="margin-top:14px" data-addroutine="'+session.id+'">＋ Adicionar rotina</button></div>').join("")+'<div class="note">Modo férias é configurado separadamente em cada sessão.</div>';
 }else if(current==="completed"){
 const done=tasks.filter(t=>t.done);
 v.innerHTML='<div class="welcome"><div><h2>Histórico de conclusão</h2><p>Tarefas concluídas permanecem disponíveis para consulta e para desfazer.</p></div></div><div class="card"><div class="sectionhead"><h3>Concluídas recentemente</h3><span class="muted" style="font-size:11px">'+done.length+' tarefas</span></div><div class="task-list">'+(done.map(taskRow).join("")||'<div class="empty">Nenhuma tarefa concluída ainda.</div>')+'</div><div class="note">No aplicativo final, a conclusão será registrada com data e hora. A tarefa ficará visível por pelo menos 24 horas e poderá ser restaurada para pendentes.</div></div>';
@@ -88,18 +96,19 @@ v.innerHTML='<div class="welcome"><div><h2>Seu calendário</h2><p>Consulte taref
 }
 bindChecks();
 $("addtask")?.addEventListener("click",()=>openModal());
-$("vacation")?.addEventListener("click",()=>{vacation=!vacation;render()});
+document.querySelectorAll("[data-vacation]").forEach(b=>b.onclick=()=>{const session=sessions.find(x=>x.id===b.dataset.vacation);session.vacation=!session.vacation;render()});
 $("prevmonth")?.addEventListener("click",()=>{month.setMonth(month.getMonth()-1);render()});
 $("nextmonth")?.addEventListener("click",()=>{month.setMonth(month.getMonth()+1);render()});
 document.querySelectorAll("[data-date]").forEach(b=>b.onclick=()=>{selectedDate=b.dataset.date;render()});
 document.querySelectorAll("[data-goto]").forEach(b=>b.onclick=()=>setView(b.dataset.goto));
 document.querySelectorAll("[data-routine]").forEach(b=>b.onclick=()=>{alert("Rotina: "+b.dataset.routine+"\nAs tarefas vinculadas aparecem nesta demonstração nas telas Hoje e Calendário.")});
 $("addsession")?.addEventListener("click",()=>alert("A criação de sessões será detalhada na versão aprovada do protótipo."));
-$("addroutine")?.addEventListener("click",()=>alert("A criação de rotinas será detalhada na versão aprovada do protótipo."));
+document.querySelectorAll("[data-addroutine]").forEach(b=>b.onclick=()=>alert("Adicionar rotina à sessão: "+sessions.find(x=>x.id===b.dataset.addroutine)?.name));
 }
-function openModal(){editing=null;$("taskform").reset();$("taskdate").value="2026-11-22";$("modaltitle").textContent="Nova tarefa";$("modalback").classList.add("show")}
+function refreshRoutineOptions(){const sid=$("tasksession").value;const session=sessions.find(x=>x.id===sid);$("taskroutine").innerHTML=(session?.routines||[]).map(r=>'<option value="'+r.id+'">'+esc(r.name)+'</option>').join("")}
+function openModal(){editing=null;$("taskform").reset();$("taskdate").value="2026-11-22";$("tasksession").innerHTML=sessions.map(x=>'<option value="'+x.id+'">'+esc(x.name)+'</option>').join("");refreshRoutineOptions();$("tasksession").onchange=refreshRoutineOptions;$("modaltitle").textContent="Nova tarefa";$("modalback").classList.add("show")}
 $("cancelmodal").onclick=()=>$("modalback").classList.remove("show");
-$("taskform").onsubmit=e=>{e.preventDefault();tasks.push({id:Date.now(),name:$("tasktitle").value,routine:"Pregações",date:$("taskdate").value||"2026-11-22",time:$("tasktime").value,priority:$("taskpriority").value,done:false,repeat:$("taskrepeat").value});$("modalback").classList.remove("show");setView(current)};
+$("taskform").onsubmit=e=>{e.preventDefault();const session=sessions.find(x=>x.id===$("tasksession").value),routine=session?.routines.find(x=>x.id===$("taskroutine").value);if(!session||!routine){alert("Selecione uma sessão e uma rotina.");return}tasks.push({id:Date.now(),name:$("tasktitle").value,sessionId:session.id,routineId:routine.id,routine:routine.name,date:$("taskdate").value||"2026-11-22",time:$("tasktime").value,priority:$("taskpriority").value,done:false,repeat:$("taskrepeat").value});$("modalback").classList.remove("show");setView(current)};
 document.querySelectorAll("[data-view]").forEach(b=>b.addEventListener("click",()=>setView(b.dataset.view)));
 render();
 </script>
