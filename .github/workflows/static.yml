@@ -23,7 +23,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # Single deploy job since we're just deploying
+  # Single deploy job for the reusable prototypes hub
   deploy:
     environment:
       name: github-pages
