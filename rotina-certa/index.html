@@ -48,6 +48,11 @@ body.dark .modalback{background:rgba(0,0,0,.72)}body.dark .field label{color:#b2
 body.dark .top h1,body.dark .card h3,body.dark .routine-top b,body.dark .session-card-title h3{color:var(--ink)}
 body.dark .mobilebar{border-top-color:var(--line)}
 @media(max-width:760px){.top-actions{gap:7px}.theme-toggle{padding:7px 9px;border-radius:10px}.theme-label{display:none}}
+
+/* Theme control: always visible in the mobile header */
+.top-actions{display:flex!important;align-items:center!important;gap:8px!important;flex-direction:row!important;visibility:visible!important;opacity:1!important}
+.theme-toggle{display:inline-flex!important;visibility:visible!important;opacity:1!important;align-items:center!important;justify-content:center!important;flex:none!important;width:38px!important;height:38px!important;padding:0!important;border:1px solid var(--line)!important;border-radius:50%!important;background:var(--surface)!important;color:var(--ink)!important;font-size:19px!important;line-height:1!important;box-shadow:0 2px 8px rgba(35,39,75,.08)!important}
+.theme-toggle .theme-label{display:none!important}
 </style>
 </head>
 <body>
