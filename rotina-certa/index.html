@@ -65,6 +65,22 @@ body.dark .day.today{background:#302d4b!important;border-color:#a198ff!important
 body.dark .day.selected{background:#3b3563!important;border-color:#a198ff!important;color:#fff!important}
 body.dark .dot{background:#a79cff!important}
 body.dark .done-dot{background:#55c49b!important}
+
+/* High-specificity dark-mode overrides for mobile task rows and native calendar buttons */
+body.dark #view .task-modern .taskname b,
+body.dark #view .today-task-list .taskname b{color:#f4f5ff!important}
+body.dark #view .task-modern .taskname small,
+body.dark #view .today-task-list .taskname small{color:#c4cada!important}
+body.dark #view .task-modern.completed .taskname b,
+body.dark #view .today-task-list .task.completed .taskname b{color:#b8bfd0!important;text-decoration:line-through!important}
+body.dark #view .calendar .day,
+body.dark #view .calendar button.day{appearance:none!important;-webkit-appearance:none!important;background-color:#282d3d!important;background-image:none!important;color:#f1f3fc!important;border:1px solid #444b62!important}
+body.dark #view .calendar .day span{color:#f1f3fc!important}
+body.dark #view .calendar .day.today{background-color:#37345a!important;border:2px solid #a99fff!important}
+body.dark #view .calendar .day.selected{background-color:#484174!important;border:2px solid #b1a8ff!important;color:#fff!important}
+body.dark #view .calendar .dayname{color:#c4cada!important}
+body.dark #view .calendar .day .dot{background-color:#b1a8ff!important}
+body.dark #view .calendar .day .done-dot{background-color:#55d6a5!important}
 </style>
 </head>
 <body>
