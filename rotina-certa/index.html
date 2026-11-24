@@ -53,6 +53,18 @@ body.dark .mobilebar{border-top-color:var(--line)}
 .top-actions{display:flex!important;align-items:center!important;gap:8px!important;flex-direction:row!important;visibility:visible!important;opacity:1!important}
 .theme-toggle{display:inline-flex!important;visibility:visible!important;opacity:1!important;align-items:center!important;justify-content:center!important;flex:none!important;width:38px!important;height:38px!important;padding:0!important;border:1px solid var(--line)!important;border-radius:50%!important;background:var(--surface)!important;color:var(--ink)!important;font-size:19px!important;line-height:1!important;box-shadow:0 2px 8px rgba(35,39,75,.08)!important}
 .theme-toggle .theme-label{display:none!important}
+
+/* Dark theme contrast fixes: task text and calendar cells */
+body.dark .taskname b{color:#f0f2fb!important}
+body.dark .taskname small{color:#b8bfd2!important}
+body.dark .task.completed .taskname b{color:#aeb5c8!important;text-decoration:line-through}
+body.dark .day{background:#242837!important;color:#e9ecf7!important;border-color:#3b4257!important}
+body.dark .day span{color:#e9ecf7!important}
+body.dark .dayname{color:#b8bfd2!important}
+body.dark .day.today{background:#302d4b!important;border-color:#a198ff!important}
+body.dark .day.selected{background:#3b3563!important;border-color:#a198ff!important;color:#fff!important}
+body.dark .dot{background:#a79cff!important}
+body.dark .done-dot{background:#55c49b!important}
 </style>
 </head>
 <body>
