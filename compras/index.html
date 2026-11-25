@@ -68,9 +68,9 @@ suppliers:[
 {id:1,name:'Pedido Rodrigo',phone:''},{id:2,name:'Pedido Normal',phone:''},{id:3,name:'Genilson',phone:''},{id:4,name:'Pedido Melancia',phone:''}
 ],
 quantities:{'1':{qty:'',unit:'Cx',supplier:'1'},'2':{qty:'',unit:'Cx',supplier:'2'},'3':{qty:'',unit:'Cx',supplier:'2'},'4':{qty:'',unit:'Cx',supplier:'1'},'5':{qty:'',unit:'Tl',supplier:'2'},'6':{qty:'',unit:'Cx',supplier:'2'},'7':{qty:'',unit:'Un',supplier:'4'},'8':{qty:'',unit:'Sc',supplier:'3'},'9':{qty:'',unit:'Dz',supplier:'2'}},
-checks:{},deliveryDate:''
+checks:{},sent:{},deliveryDate:''
 };
-let state=load(),step=2,openSupplier='all';
+let state=load(),step=2,openSupplier='';
 function load(){try{let x=JSON.parse(localStorage.getItem(KEY));if(!x||!Array.isArray(x.products)||!Array.isArray(x.suppliers))return structuredClone(sample);x.products=x.products.map(p=>({...p,active:p.active!==false,units:Array.isArray(p.units)?p.units:(String(p.unit||'Un').split(',').map(v=>v.trim()).filter(Boolean))}));x.quantities=x.quantities||{};x.products.forEach(p=>{let q=x.quantities[p.id]||(x.quantities[p.id]={qty:'',supplier:''});q.unit=q.unit||p.units[0]||'Un'});x.checks=x.checks||{};x.sent=x.sent||{};return x}catch(e){return structuredClone(sample)}}
 function save(){localStorage.setItem(KEY,JSON.stringify(state))}
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
